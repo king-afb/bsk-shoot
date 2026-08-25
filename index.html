@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>バスケ シュート確率表</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>🏀 バスケ シュート確率表</h1>
+      <p>全36か所の試投数・成功数・成功率を記録</p>
+    </div>
+    <a class="report-link" href="report.html">A4データ一覧</a>
+  </header>
+
+  <main class="wrap">
+    <section class="summary card">
+      <div>
+        <span>全体 試投</span>
+        <strong id="totalAttempts">0</strong>
+      </div>
+      <div>
+        <span>全体 成功</span>
+        <strong id="totalMakes">0</strong>
+      </div>
+      <div>
+        <span>全体 成功率</span>
+        <strong id="totalPct">0.0%</strong>
+      </div>
+    </section>
+
+    <section class="controls card">
+      <label>記録名
+        <input id="sessionName" type="text" placeholder="例：8/25 自主練">
+      </label>
+      <button id="resetBtn" class="danger">全データをリセット</button>
+    </section>
+
+    <section class="legend card">
+      <b>距離</b>
+      <span>HH＝フリースローラインとゴールの間</span>
+      <span>FT＝フリースローライン付近</span>
+      <span>HR＝FTと3Pの間</span>
+      <span>3P＝スリーポイントライン</span>
+    </section>
+
+    <section id="shotGrid" class="shot-grid"></section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
