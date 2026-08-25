@@ -4,7 +4,92 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>バスケ シュート確率表</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+*{box-sizing:border-box}
+:root{
+  --bg:#f3f5f8;--card:#fff;--ink:#172033;--muted:#687386;--line:#dfe4ea;
+  --accent:#ff7a00;--accent2:#fff2e6;--good:#118a4e;--danger:#c62828;
+}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
+button,input,a{font:inherit}
+.topbar{position:sticky;top:0;z-index:5;background:#111827;color:#fff;padding:16px max(16px,calc((100vw - 1200px)/2));display:flex;justify-content:space-between;gap:16px;align-items:center}
+.topbar h1{font-size:22px;margin:0 0 4px}
+.topbar p{margin:0;color:#cbd5e1;font-size:13px}
+.report-link,.report-actions a{background:var(--accent);color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:700;white-space:nowrap}
+.wrap{max-width:1200px;margin:auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 3px 12px rgba(15,23,42,.05)}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-bottom:12px}
+.summary div{padding:14px;border-right:1px solid var(--line)}
+.summary div:last-child{border-right:0}
+.summary span{display:block;color:var(--muted);font-size:12px}
+.summary strong{font-size:26px}
+.controls{padding:12px;display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:12px}
+.controls label{font-weight:700;display:flex;flex-direction:column;gap:5px;flex:1}
+.controls input{padding:10px;border:1px solid var(--line);border-radius:9px}
+button{border:0;border-radius:9px;padding:10px 12px;font-weight:700;cursor:pointer}
+.danger{background:#fee2e2;color:var(--danger)}
+.legend{padding:10px 12px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px}
+.legend span{color:var(--muted)}
+.shot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.zone{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.zone h2{margin:0;padding:13px 14px;background:#111827;color:#fff;font-size:18px}
+.angle{border-top:1px solid var(--line);padding:10px}
+.angle h3{margin:0 0 8px;font-size:14px;color:#334155}
+.spots{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.spot{border:1px solid var(--line);border-radius:12px;padding:9px;background:#fafafa}
+.spot-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.spot-name{font-weight:800}
+.pct{font-weight:900;color:var(--good);font-size:18px}
+.counts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.count{background:#fff;border:1px solid var(--line);border-radius:8px;text-align:center;padding:5px}
+.count small{display:block;color:var(--muted);font-size:10px}
+.count b{font-size:20px}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.btn-attempt{background:#e5e7eb;color:#111827}
+.btn-make{background:var(--accent);color:#fff}
+.undo{width:100%;margin-top:6px;background:#fff;border:1px solid var(--line);color:#64748b;padding:6px;font-size:11px}
+
+/* report */
+.report-page{background:#d9dde3;padding:18px}
+.report-actions{max-width:297mm;margin:0 auto 12px;display:flex;justify-content:space-between}
+.report-actions button{background:#111827;color:#fff}
+.report-sheet{width:297mm;min-height:210mm;margin:auto;background:white;padding:10mm;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.report-title{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #111827;padding-bottom:5mm;margin-bottom:4mm}
+.report-title h1{margin:0;font-size:22px}
+.report-title p{margin:4px 0 0;font-size:12px}
+.report-total{text-align:right}
+.report-total span{display:block;font-size:11px;color:#64748b}
+.report-total strong{font-size:19px;margin-right:8px}
+.report-total b{font-size:22px;color:var(--good)}
+.report-sections{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm}
+.report-block h2{font-size:15px;margin:0 0 2mm;padding:2mm;background:#111827;color:#fff}
+.report-table{width:100%;border-collapse:collapse;font-size:9.5px}
+.report-table th,.report-table td{border:1px solid #9ca3af;padding:1.2mm;text-align:center}
+.report-table th{background:#f1f5f9}
+.report-table td.label{text-align:left;font-weight:700}
+.report-table td.pct-cell{font-weight:800}
+.report-footer{margin-top:4mm;border-top:1px solid #cbd5e1;padding-top:2mm;display:flex;justify-content:space-between;font-size:9px;color:#64748b}
+
+@media(max-width:900px){
+  .shot-grid{grid-template-columns:1fr}
+  .spots{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+  .topbar{align-items:flex-start}
+  .topbar h1{font-size:18px}
+  .topbar p{display:none}
+  .report-link{font-size:12px;padding:8px}
+  .summary strong{font-size:22px}
+  .controls{align-items:stretch;flex-direction:column}
+  .spots{grid-template-columns:1fr 1fr}
+}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  body.report-page{background:#fff;padding:0}
+  .no-print{display:none!important}
+  .report-sheet{box-shadow:none;margin:0;width:297mm;height:210mm;min-height:210mm;padding:8mm}
+}
+</style>
 </head>
 <body>
   <header class="topbar">
@@ -12,7 +97,7 @@
       <h1>🏀 バスケ シュート確率表</h1>
       <p>全36か所の試投数・成功数・成功率を記録</p>
     </div>
-    <a class="report-link" href="report.html">A4データ一覧</a>
+    <button class="report-link" id="reportBtn" type="button">A4データ一覧</button>
   </header>
 
   <main class="wrap">
@@ -49,6 +134,265 @@
     <section id="shotGrid" class="shot-grid"></section>
   </main>
 
-  <script src="app.js"></script>
+  
+
+<section id="reportOverlay" class="report-overlay" style="display:none">
+  <div class="report-actions no-print">
+    <button id="backBtn">← 入力画面へ戻る</button>
+    <button onclick="window.print()">印刷 / PDF保存</button>
+  </div>
+  <main class="report-sheet">
+    <div class="report-title">
+      <div>
+        <h1>🏀 シュート確率一覧</h1>
+        <p id="reportName">記録名：―</p>
+      </div>
+      <div class="report-total">
+        <span>全体</span>
+        <strong id="reportTotal">0 / 0</strong>
+        <b id="reportPct">0.0%</b>
+      </div>
+    </div>
+    <div id="reportContent"></div>
+    <div class="report-footer">
+      <span id="printDate"></span>
+      <span>HH / FT / HR / 3P</span>
+    </div>
+  </main>
+</section>
+
+<style>
+.report-link{border:0;cursor:pointer}
+.report-overlay{position:fixed;inset:0;z-index:50;background:#d9dde3;overflow:auto;padding:18px}
+.report-overlay .report-actions{max-width:297mm;margin:0 auto 12px;display:flex;justify-content:space-between}
+.report-overlay .report-actions button{background:#111827;color:white}
+@media(max-width:900px){
+  .report-overlay{padding:8px}
+  .report-sheet{width:100%;min-height:auto;padding:12px}
+  .report-sections{grid-template-columns:1fr}
+}
+@media print{
+  body > *:not(#reportOverlay){display:none!important}
+  #reportOverlay{display:block!important;position:static;padding:0;background:#fff}
+  #reportOverlay .report-sections{grid-template-columns:1fr 1fr 1fr}
+}
+</style>
+
+<script>
+const STORAGE_KEY = "basketShotChart_v1";
+const distances = [
+  {key:"HH", label:"HH"},
+  {key:"FT", label:"FT"},
+  {key:"HR", label:"HR"},
+  {key:"3P", label:"3P"}
+];
+
+const zones = [
+  {key:"L", name:"左", angles:["0°","30°","45°","60°"]},
+  {key:"C", name:"真ん中", angles:["中央"]},
+  {key:"R", name:"右", angles:["0°","30°","45°","60°"]}
+];
+
+function emptyData(){
+  const shots = {};
+  zones.forEach(z=>{
+    z.angles.forEach(a=>{
+      distances.forEach(d=>{
+        const id = `${z.key}_${a}_${d.key}`;
+        shots[id] = {attempts:0,makes:0};
+      });
+    });
+  });
+  return {sessionName:"",shots};
+}
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return emptyData();
+    const saved = JSON.parse(raw);
+    const fresh = emptyData();
+    fresh.sessionName = saved.sessionName || "";
+    Object.keys(fresh.shots).forEach(k=>{
+      if(saved.shots && saved.shots[k]){
+        fresh.shots[k].attempts = Number(saved.shots[k].attempts)||0;
+        fresh.shots[k].makes = Number(saved.shots[k].makes)||0;
+      }
+    });
+    return fresh;
+  }catch(e){ return emptyData(); }
+}
+
+let data = loadData();
+function save(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); }
+
+function pct(m,a){ return a ? (m/a*100).toFixed(1)+"%" : "0.0%"; }
+
+function totals(){
+  return Object.values(data.shots).reduce((o,s)=>{
+    o.attempts += s.attempts; o.makes += s.makes; return o;
+  },{attempts:0,makes:0});
+}
+
+function addAttempt(id){
+  data.shots[id].attempts++;
+  save(); renderApp();
+}
+function addMake(id){
+  data.shots[id].attempts++;
+  data.shots[id].makes++;
+  save(); renderApp();
+}
+function undo(id){
+  const s=data.shots[id];
+  if(s.attempts<=0)return;
+  // 直前の種類は保存していないため、成功数が試投数と同数なら成功も1つ戻す。
+  if(s.makes===s.attempts && s.makes>0)s.makes--;
+  s.attempts--;
+  if(s.makes>s.attempts)s.makes=s.attempts;
+  save(); renderApp();
+}
+
+function renderApp(){
+  const root=document.getElementById("shotGrid");
+  if(!root)return;
+  root.innerHTML="";
+  zones.forEach(z=>{
+    const zone=document.createElement("section");
+    zone.className="zone";
+    zone.innerHTML=`<h2>${z.name}</h2>`;
+    z.angles.forEach(a=>{
+      const angle=document.createElement("div");
+      angle.className="angle";
+      angle.innerHTML=`<h3>${a}</h3><div class="spots"></div>`;
+      const spots=angle.querySelector(".spots");
+      distances.forEach(d=>{
+        const id=`${z.key}_${a}_${d.key}`;
+        const s=data.shots[id];
+        const el=document.createElement("div");
+        el.className="spot";
+        el.innerHTML=`
+          <div class="spot-head"><span class="spot-name">${d.label}</span><span class="pct">${pct(s.makes,s.attempts)}</span></div>
+          <div class="counts">
+            <div class="count"><small>打った</small><b>${s.attempts}</b></div>
+            <div class="count"><small>入った</small><b>${s.makes}</b></div>
+          </div>
+          <div class="btns">
+            <button class="btn-attempt">打った＋1</button>
+            <button class="btn-make">入った＋1</button>
+          </div>
+          <button class="undo">1本戻す</button>`;
+        el.querySelector(".btn-attempt").onclick=()=>addAttempt(id);
+        el.querySelector(".btn-make").onclick=()=>addMake(id);
+        el.querySelector(".undo").onclick=()=>undo(id);
+        spots.appendChild(el);
+      });
+      zone.appendChild(angle);
+    });
+    root.appendChild(zone);
+  });
+  const t=totals();
+  document.getElementById("totalAttempts").textContent=t.attempts;
+  document.getElementById("totalMakes").textContent=t.makes;
+  document.getElementById("totalPct").textContent=pct(t.makes,t.attempts);
+}
+
+function setupApp(){
+  if(!document.getElementById("shotGrid"))return;
+  const name=document.getElementById("sessionName");
+  name.value=data.sessionName||"";
+  name.addEventListener("input",()=>{data.sessionName=name.value;save();});
+  document.getElementById("resetBtn").onclick=()=>{
+    if(confirm("全36か所の記録をすべて0に戻しますか？")){
+      const keepName=data.sessionName;
+      data=emptyData(); data.sessionName=keepName; save(); renderApp();
+    }
+  };
+  renderApp();
+}
+
+function renderReport(){
+  const root=document.getElementById("reportContent");
+  if(!root)return;
+  document.getElementById("reportName").textContent="記録名："+(data.sessionName||"―");
+  const t=totals();
+  document.getElementById("reportTotal").textContent=`${t.makes} / ${t.attempts}`;
+  document.getElementById("reportPct").textContent=pct(t.makes,t.attempts);
+  document.getElementById("printDate").textContent="作成："+new Date().toLocaleString("ja-JP");
+
+  const wrap=document.createElement("div");
+  wrap.className="report-sections";
+  zones.forEach(z=>{
+    const block=document.createElement("section");
+    block.className="report-block";
+    block.innerHTML=`<h2>${z.name}</h2>`;
+    const table=document.createElement("table");
+    table.className="report-table";
+    table.innerHTML="<thead><tr><th>角度</th><th>距離</th><th>成功</th><th>試投</th><th>成功率</th></tr></thead>";
+    const tb=document.createElement("tbody");
+    z.angles.forEach(a=>{
+      distances.forEach((d,i)=>{
+        const id=`${z.key}_${a}_${d.key}`;
+        const s=data.shots[id];
+        const tr=document.createElement("tr");
+        tr.innerHTML=`
+          <td>${i===0?a:""}</td>
+          <td class="label">${d.label}</td>
+          <td>${s.makes}</td>
+          <td>${s.attempts}</td>
+          <td class="pct-cell">${pct(s.makes,s.attempts)}</td>`;
+        tb.appendChild(tr);
+      });
+    });
+    table.appendChild(tb);
+    block.appendChild(table);
+    wrap.appendChild(block);
+  });
+  root.appendChild(wrap);
+}
+
+setupApp();
+renderReport();
+function refreshInlineReport(){
+  const root=document.getElementById("reportContent");
+  if(!root)return;
+  root.innerHTML="";
+  document.getElementById("reportName").textContent="記録名："+(data.sessionName||"―");
+  const t=totals();
+  document.getElementById("reportTotal").textContent=`${t.makes} / ${t.attempts}`;
+  document.getElementById("reportPct").textContent=pct(t.makes,t.attempts);
+  document.getElementById("printDate").textContent="作成："+new Date().toLocaleString("ja-JP");
+  const wrap=document.createElement("div");
+  wrap.className="report-sections";
+  zones.forEach(z=>{
+    const block=document.createElement("section");
+    block.className="report-block";
+    block.innerHTML=`<h2>${z.name}</h2>`;
+    const table=document.createElement("table");
+    table.className="report-table";
+    table.innerHTML="<thead><tr><th>角度</th><th>距離</th><th>成功</th><th>試投</th><th>成功率</th></tr></thead>";
+    const tb=document.createElement("tbody");
+    z.angles.forEach(a=>{
+      distances.forEach((d,i)=>{
+        const id=`${z.key}_${a}_${d.key}`;
+        const s=data.shots[id];
+        const tr=document.createElement("tr");
+        tr.innerHTML=`<td>${i===0?a:""}</td><td class="label">${d.label}</td><td>${s.makes}</td><td>${s.attempts}</td><td class="pct-cell">${pct(s.makes,s.attempts)}</td>`;
+        tb.appendChild(tr);
+      });
+    });
+    table.appendChild(tb); block.appendChild(table); wrap.appendChild(block);
+  });
+  root.appendChild(wrap);
+}
+document.getElementById("reportBtn").addEventListener("click",()=>{
+  refreshInlineReport();
+  document.getElementById("reportOverlay").style.display="block";
+});
+document.getElementById("backBtn").addEventListener("click",()=>{
+  document.getElementById("reportOverlay").style.display="none";
+});
+</script>
+
 </body>
 </html>
